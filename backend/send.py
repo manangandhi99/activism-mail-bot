@@ -21,7 +21,9 @@ class Sender():
         smtp_server = "smtp.gmail.com"
 
         num_sent = 0
+        num_tries = 0
         while True:
+            num_tries += 1
             try:
                 # create a secure SSL context
                 context = ssl.create_default_context()
@@ -36,7 +38,7 @@ class Sender():
 
                         msg = EmailMessage()
 
-                        msg['Subject'] = subject if subject else messages.gen_subject()
+                        msg['Subject'] = messages.gen_subject()
                         msg['From'] = src_email
                         msg['To'] = dst_email
                         
@@ -47,8 +49,11 @@ class Sender():
                         print("Sent email")
                         num_sent += 1
                 break
-            except smtplib.SMTPException:
+            except smtplib.SMTPException as E:
+                print(E)
+                if num_tries >= 5:
+                    return -1
+                    break
                 print("Unexpected error... trying again in 10 seconds.")
                 time.sleep(10)
-        server.quit()
         return num_sent
