@@ -12,7 +12,7 @@ class MainContainer extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: "",
+            email: "",
             password: "",
             name: "",
             state: "",
@@ -20,12 +20,12 @@ class MainContainer extends Component {
         }
     }
 
-    usernameChange = newUsername => {
+    emailChange = newEmail => {
         this.setState({
-            username: newUsername.target.value
+            email: newEmail.target.value
         });
         console.log("username set");
-        console.log(this.username);
+        console.log(this.email);
     };
 
     passwordChange = newPassword => {
@@ -35,7 +35,7 @@ class MainContainer extends Component {
         console.log("password set");
     };
 
-    passwordChange = newName => {
+    nameChange = newName => {
         this.setState({
             name: newName.target.value
         });
@@ -57,7 +57,7 @@ class MainContainer extends Component {
     };
 
     onClick = () => {
-        console.log("hlloe");
+
         console.log(this.state);
 
         fetch('https://activism-mail-bot.herokuapp.com/sendEmail', {
@@ -76,8 +76,6 @@ class MainContainer extends Component {
         )
     };
 
-    
-
     render() {
         return (
             <div>
@@ -86,18 +84,18 @@ class MainContainer extends Component {
             <Grid item xs={false} sm={4} md={7} />
             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
                 <div>
-                <form noValidate>
+                <form noValidate onSubmit={e => e.preventDefault()}>
                     <TextField
                         variant="outlined"
                         margin="normal"
                         required
                         fullWidth
                         id="email"
-                        label="Email Address"
+                        label="Email"
                         name="email"
                         autoComplete="email"
                         autoFocus
-                        onChange={this.usernameChange}
+                        onChange={this.emailChange}
                     />
                     <TextField
                         variant="outlined"
@@ -108,7 +106,6 @@ class MainContainer extends Component {
                         label="Password"
                         type="password"
                         id="password"
-                        autoComplete="current-password"
                         onChange={this.passwordChange}
                     />
                     <TextField
@@ -116,7 +113,7 @@ class MainContainer extends Component {
                         margin="normal"
                         required
                         fullWidth
-                        id="email"
+                        id="name"
                         label="Name"
                         name="name"
                         autoComplete="name"
