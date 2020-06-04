@@ -59,7 +59,24 @@ class MainContainer extends Component {
     onClick = () => {
         console.log("hlloe");
         console.log(this.state);
+
+        fetch('https://activism-mail-bot.herokuapp.com/sendEmail', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(this.state)
+        }).then(
+            function (response) {
+                //setIsLoaded(true);
+                console.log(response);
+                //setResponseCode(response.status);
+            }
+        )
     };
+
+    
 
     render() {
         return (
@@ -113,7 +130,7 @@ class MainContainer extends Component {
                         fullWidth
                         id="state"
                         label="State"
-                        name="name"
+                        name="state"
                         autoComplete="state"
                         autoFocus
                         onChange={this.stateChange}
