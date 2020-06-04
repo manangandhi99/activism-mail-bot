@@ -4,6 +4,9 @@ from waitress import serve
 from error import InvalidUsage
 from send import Sender
 
+from urllib.parse import unquote
+
+
 app = Flask(__name__)
 
 
@@ -51,12 +54,16 @@ def send_email():
     
     state = request.json['state']
     county = request.json['county']
-
+    email = unquote(request.json['email'])
+    password = unquote(request.json['password'])
+    print(email)
+    
     recv = sender.get_recipients(state, county)
-    num_sent = sender.send_email(recv, request.json['name'], request.json['email'], request.json['password'])
+    num_sent = sender.send_email(recv, request.json['name'], email, password)
     
     
     return jsonify({'number of emails sent': num_sent})
+
 
 
 if __name__ == '__main__':
