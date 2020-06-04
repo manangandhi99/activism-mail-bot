@@ -59,5 +59,9 @@ def send_email():
     return jsonify({'number of emails sent': num_sent})
 
 
+if __name__ == '__main__':
+    app.debug = True
+    app.run(threaded=True)
 
-serve(app, host='0.0.0.0', port=3000)
+
+# serve(app, host='0.0.0.0', port=3000)
