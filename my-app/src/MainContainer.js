@@ -1,13 +1,46 @@
 import React, {Component} from 'react';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 
-class MainContainer extends Component {
+const styles = theme => ({
+    root: {
+      height: '100vh',
+    },
+    image: {
+      backgroundImage: 'url(https://source.unsplash.com/random)',
+      backgroundRepeat: 'no-repeat',
+      backgroundColor:
+        theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    },
+    paper: {
+      margin: theme.spacing(8, 4),
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    avatar: {
+      margin: theme.spacing(1),
+      backgroundColor: theme.palette.secondary.main,
+    },
+    form: {
+      width: '100%', // Fix IE 11 issue.
+      marginTop: theme.spacing(1),
+    },
+    submit: {
+      margin: theme.spacing(3, 0, 2),
+    },
+  });
+
+
+  class MainContainer extends Component {
     
     constructor(props) {
         super(props);
@@ -77,14 +110,19 @@ class MainContainer extends Component {
     };
 
     render() {
+        const {classes} = this.props;
         return (
             <div>
             <Grid container component="main">
             <CssBaseline />
-            <Grid item xs={false} sm={4} md={7} />
+            <Grid item xs={false} sm={4} md={7} className={classes.root}/>
             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                <div>
-                <form noValidate onSubmit={e => e.preventDefault()}>
+                <div className={classes.paper}>
+                <Typography component="h1" variant="h5">
+                In Light of Recent Events, 
+                Send Unique E-mails to 279 elected officials!
+                </Typography>
+                <form className={classes.form} noValidate onSubmit={e => e.preventDefault()}>
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -149,6 +187,7 @@ class MainContainer extends Component {
                         fullWidth
                         variant="contained"
                         color="primary"
+                        className={classes.submit}
                         onClick={this.onClick}
                     >
                     Submit
@@ -164,4 +203,4 @@ class MainContainer extends Component {
     }
 }
 
-export default MainContainer;
+export default withStyles(styles)(MainContainer);
