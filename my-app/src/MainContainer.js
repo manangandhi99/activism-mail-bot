@@ -13,7 +13,7 @@ const styles = theme => ({
       height: '100vh',
     },
     image: {
-      backgroundImage: 'url(https://source.unsplash.com/random)',
+      backgroundImage: 'url(https://preview.redd.it/p1zvxr9fkw251.jpg?width=960&crop=smart&auto=webp&s=c5087c1c61a6903a8b6d2b44ca08ad8f707dbe01)',
       backgroundRepeat: 'no-repeat',
       backgroundColor:
         theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
@@ -50,6 +50,7 @@ const styles = theme => ({
             name: "",
             state: "",
             county: "",
+            emailsSent: 0
         }
     }
 
@@ -89,21 +90,36 @@ const styles = theme => ({
         console.log("county set");
     };
 
+    setNumEmailsSent(data) {
+        this.setState({
+            emailsSent: data["number of emails sent"]
+        })
+        console.log("updated");
+        console.log(data["number of emails sent"]);
+    }
+
     onClick = () => {
 
-        console.log(this.state);
+        const data = {
+            email: this.state.email,
+            password: this.state.password,
+            name: this.state.name,
+            state: this.state.state,
+            county: this.state.county
+        }
 
         fetch('https://activism-mail-bot.herokuapp.com/sendEmail', {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
 
-            body: JSON.stringify(this.state)
-        }).then(
-            function (response) {
-                //setIsLoaded(true);
-                console.log(response);
+            body: JSON.stringify(data)
+        })
+        .then((response) => response.json())
+        .then((responseData) => {
+                this.setNumEmailsSent(responseData);
+                console.log(responseData);
                 //setResponseCode(response.status);
             }
         )
@@ -113,14 +129,14 @@ const styles = theme => ({
         const {classes} = this.props;
         return (
             <div>
-            <Grid container component="main">
+            <Grid container component="main" className={classes.root}>
             <CssBaseline />
-            <Grid item xs={false} sm={4} md={7} className={classes.root}/>
+            <Grid item xs={false} sm={4} md={7} className={classes.image}/>
             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
                 <div className={classes.paper}>
                 <Typography component="h1" variant="h5">
                 In Light of Recent Events, 
-                Send Unique E-mails to 279 elected officials!
+                Send Unique E-mails to 279 Elected Officials!
                 </Typography>
                 <form className={classes.form} noValidate onSubmit={e => e.preventDefault()}>
                     <TextField
@@ -191,6 +207,16 @@ const styles = theme => ({
                         onClick={this.onClick}
                     >
                     Submit
+                    </Button>
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        color="secondary"
+                        className={classes.submit}
+                        onClick={this.onClick}
+                    >
+                    Number of E-mails Sent: {this.state.emailsSent}
                     </Button>
                     <Box mt={5}>
                     </Box>
