@@ -2,11 +2,13 @@ import React, {Component} from 'react';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
+import Select from '@material-ui/core/Select';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
 
 const styles = theme => ({
     root: {
@@ -21,7 +23,7 @@ const styles = theme => ({
       backgroundPosition: 'center',
     },
     paper: {
-      margin: theme.spacing(8, 4),
+      margin: theme.spacing(4, 4),
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -35,10 +37,9 @@ const styles = theme => ({
       marginTop: theme.spacing(1),
     },
     submit: {
-      margin: theme.spacing(3, 0, 2),
+      margin: theme.spacing(3, 0, 1),
     },
   });
-
 
   class MainContainer extends Component {
     
@@ -50,7 +51,11 @@ const styles = theme => ({
             name: "",
             state: "",
             county: "",
-            emailsSent: 0
+            emailsSent: 0,
+            states: [
+                {name: "California", id: 1},
+                {name: "Massechusets", id: 2}
+            ]
         }
     }
 
@@ -138,7 +143,13 @@ const styles = theme => ({
                 In Light of Recent Events, 
                 Send Unique E-mails to 279 Elected Officials!
                 </Typography>
-                <form className={classes.form} noValidate onSubmit={e => e.preventDefault()}>
+                <form className={classes.form} noValidate>
+                    <Typography component="h3" variant="h8">
+                        Step 1: Configure Email Settings
+                        <Link href="https://myaccount.google.com/lesssecureapps">
+                            Link
+                        </Link>
+                    </Typography>
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -186,7 +197,24 @@ const styles = theme => ({
                         autoFocus
                         onChange={this.stateChange}
                     />
-                    <TextField
+                    <Typography component="h4" variant="h8">
+                        State:
+                    </Typography>
+                    <Select value={this.state.state}
+                        placeholder="State" 
+                        variant="filled"
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="state"
+                        label="State"
+                        name="state"
+                        autoComplete="state"
+                        autoFocus
+                        onChange={(e) => this.setState({state: e.target.value})}>
+                            {this.state.states.map((state) => <option key={state.id} value={state.name}>{state.name}</option>)}
+                    </Select>
+                     <TextField
                         variant="outlined"
                         margin="normal"
                         required
