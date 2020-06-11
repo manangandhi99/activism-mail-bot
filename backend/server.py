@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -7,6 +8,11 @@ from error import InvalidUsage
 from send import Sender
 
 from urllib.parse import unquote
+
+from gmail import create_and_send
+
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 
 app = Flask(__name__)
@@ -68,10 +74,40 @@ def send_email():
     return jsonify({'number of emails sent': num_sent})
 
 
+@app.route('/gmail', methods=['POST'])
+def gmail_email():
+    try:
+        # Specify the CLIENT_ID of the app that accesses the backend:
+        CLIENT_ID = os.environ.get('ACTIVISM_EMAIL_BOT_GOOGLE_CLIENT_ID')
+
+        print(request.args['id_token'])
+
+        idinfo = id_token.verify_oauth2_token(
+            request.args['id_token'], requests.Request(), CLIENT_ID)
+
+        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            raise ValueError('Wrong issuer.')
+
+        if CLIENT_ID not in idinfo['aud']:
+            print("clientid was not in aud field from google response")
+            return
+
+        # ID token is valid. Get the user's Google Account ID from the decoded token.
+
+        email = idinfo['email']
+        print("here is the users email: " + str(email))
+
+        create_and_send(request.json['access_token'], request.args['id_token'], email)
+        return 'yay'
+
+    except ValueError:
+        # Invalid token
+        print("invalid login")
+        return
+
 
 if __name__ == '__main__':
     app.debug = True
     app.run(threaded=True)
-
 
 # serve(app, host='0.0.0.0', port=3000)

@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
+import { GoogleLogin, GoogleLogout } from 'react-google-login';
 
 const styles = theme => ({
     root: {
@@ -130,6 +131,17 @@ const styles = theme => ({
         )
     };
 
+    responseGoogle(response) {
+        let token = response.getAuthResponse().id_token;
+        console.log(response.getAuthResponse());
+        console.log(response.getAuthResponse().access_token);
+        console.log(token);
+    }
+
+    googleLoginFailed() {
+        alert("Looks like the Google login failed. Please try again.")
+    }
+
     render() {
         const {classes} = this.props;
         return (
@@ -150,6 +162,14 @@ const styles = theme => ({
                             Link
                         </Link>
                     </Typography>
+                    {/* Mom, Look at me im doing google login things */}
+                    <GoogleLogin
+                        clientId="956446953020-rrci9a9tkelqpgag33eb7j4eukmjmioe.apps.googleusercontent.com"
+                        buttonText="Login with Google"
+                        onSuccess={this.responseGoogle}
+                        onFailure={this.googleLoginFailed}
+                        cookiePolicy={'single_host_origin'} 
+                        scope={'https://www.googleapis.com/auth/gmail.send'} />
                     <TextField
                         variant="outlined"
                         margin="normal"
