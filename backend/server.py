@@ -9,7 +9,7 @@ from send import Sender
 
 from urllib.parse import unquote
 
-from gmail import create_and_send
+from gmail import GmailSender
 
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -77,27 +77,38 @@ def send_email():
 @app.route('/gmail', methods=['POST'])
 def gmail_email():
     try:
+        # this flow is used for the id_token (jwt) no need for it now but could be used later
+        # short way of saying i was too lazy to delete it, but not lazy enough to write all this
+
         # Specify the CLIENT_ID of the app that accesses the backend:
-        CLIENT_ID = os.environ.get('ACTIVISM_EMAIL_BOT_GOOGLE_CLIENT_ID')
+        # CLIENT_ID = os.environ.get('ACTIVISM_EMAIL_BOT_GOOGLE_CLIENT_ID')
 
-        print(request.args['id_token'])
+        # print(request.args['id_token'])
 
-        idinfo = id_token.verify_oauth2_token(
-            request.args['id_token'], requests.Request(), CLIENT_ID)
+        # idinfo = id_token.verify_oauth2_token(
+        #     request.args['id_token'], requests.Request(), CLIENT_ID)
 
-        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            raise ValueError('Wrong issuer.')
+        # if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+        #     raise ValueError('Wrong issuer.')
 
-        if CLIENT_ID not in idinfo['aud']:
-            print("clientid was not in aud field from google response")
-            return
+        # if CLIENT_ID not in idinfo['aud']:
+        #     print("clientid was not in aud field from google response")
+        #     return
 
         # ID token is valid. Get the user's Google Account ID from the decoded token.
 
-        email = idinfo['email']
-        print("here is the users email: " + str(email))
+        # email = idinfo['email']
+        # print("here is the users email: " + str(email))
 
-        create_and_send(request.json['access_token'], request.args['id_token'], email)
+        access_token = request.json['access_token']
+        gmail_sender = GmailSender(access_token)
+
+        # def send_email(sender_email, recipient_email, subject, message_body):
+        gmail_sender.send_email('activismmailbot@gmail.com', 
+            'activismmailbot@gmail.com', 
+            'python is an ass lang', 
+            'sharan likes his code like he likes his balls.... dirty')
+
         return 'yay'
 
     except ValueError:

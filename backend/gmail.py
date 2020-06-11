@@ -18,79 +18,64 @@ from google.auth.credentials import Credentials
 
 from apiclient import errors
 
+class GmailSender():
 
-def create_and_send(access_token, id_token, sender_email):
-    message = CreateMessage(sender_email, 
-        "activismmailbot@gmail.com", 
-        "from python", 
-        "a message from python look i can code good")
-
-    credentials = AccessTokenCredentials(access_token=access_token, user_agent='my-user-agent/1.0')
-    gmail_service = build_service(credentials)
-
-    SendMessage(gmail_service, sender_email, message)
+    def __init__(self, access_token):
+        credentials = AccessTokenCredentials(access_token=access_token, user_agent='my-user-agent/1.0')
+        http = httplib2.Http()
+        http = credentials.authorize(http)
+        self.gmail_service = build('gmail', 'v1', http=http)
 
 
-def SendMessage(service, user_id, message):
-  """Send an email message.
+    def send_email(self, sender_email, recipient_email, subject, message_body):
+        # create the email
+        message = self.__create_message(sender_email, 
+            recipient_email, # reciever
+            subject, #subject
+            message_body) # body
 
-  Args:
-    service: Authorized Gmail API service instance.
-    user_id: User's email address. The special value "me"
-    can be used to indicate the authenticated user.
-    message: Message to be sent.
-
-  Returns:
-    Sent Message.
-  """
-  try:
-    message = (service.users().messages().send(userId=user_id, body=message)
-               .execute())
-    print ('Message Id: %s' % message['id'])
-    return message
-  except errors.HttpError as error:
-    print ('An error occurred: %s' % error)
+        # send it, real complicated stuff
+        self.__send_email(self.gmail_service, sender_email, message)
 
 
-def CreateMessage(sender, to, subject, message_text):
-  """Create a message for an email.
+    def __send_email(self, service, user_id, message):
+      """Send an email message.
 
-  Args:
-    sender: Email address of the sender.
-    to: Email address of the receiver.
-    subject: The subject of the email message.
-    message_text: The text of the email message.
+      Args:
+        service: Authorized Gmail API service instance.
+        user_id: User's email address. The special value "me"
+        can be used to indicate the authenticated user.
+        message: Message to be sent.
 
-  Returns:
-    An object containing a base64url encoded email object.
-  """
-  message = MIMEText(message_text)
-  message['to'] = to
-  message['from'] = sender
-  message['subject'] = subject
-  raw = base64.urlsafe_b64encode(message.as_bytes())
-  raw = raw.decode()
-  body = {'raw': raw}
-  return body
-
-
-def build_service(credentials):
-  """Build a Gmail service object.
-
-  Args:
-    credentials: OAuth 2.0 credentials.
-
-  Returns:
-    Gmail service object.
-  """
-
-#   credentials = AccessTokenCredentials(access_token,
-#     'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36')
-
-  http = httplib2.Http()
-  http = credentials.authorize(http)
-  return build('gmail', 'v1', http=http)
+      Returns:
+        Sent Message.
+      """
+      try:
+        message = (service.users().messages().send(userId=user_id, body=message)
+                   .execute())
+        print ('Message Id: %s' % message['id'])
+        return message
+      except errors.HttpError as error:
+        print ('An error occurred: %s' % error)
 
 
-if __name__ == '__main__':
-    main()
+    def __create_message(self, sender, to, subject, message_text):
+      """Create a message for an email.
+
+      Args:
+        sender: Email address of the sender.
+        to: Email address of the receiver.
+        subject: The subject of the email message.
+        message_text: The text of the email message.
+
+      Returns:
+        An object containing a base64url encoded email object.
+      """
+      message = MIMEText(message_text)
+      message['to'] = to
+      message['from'] = sender
+      message['subject'] = subject
+      raw = base64.urlsafe_b64encode(message.as_bytes())
+      raw = raw.decode()
+      body = {'raw': raw}
+      return body
